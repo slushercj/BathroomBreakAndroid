@@ -21,7 +21,13 @@ public class FontManager {
                 View child = vg.getChildAt(i);
                 markAsIconContainer(child, typeface);
             }
-        } else if (v instanceof TextView) {
+        } else {
+            setIcon(v, typeface);
+        }
+    }
+
+    public static void setIcon(View v, Typeface typeface) {
+        if (v instanceof TextView) {
             ((TextView) v).setTypeface(typeface);
         }
     }
