@@ -36,8 +36,8 @@ public class LoginActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast toast = Toast.makeText(LoginActivity.this, "Sign-in clicked", Toast.LENGTH_SHORT);
-                toast.show();
+                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                startActivity(intent);
             }
         });
     }

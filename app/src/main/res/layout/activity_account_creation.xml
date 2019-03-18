@@ -201,7 +201,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            tools:text="@string/sign_in" />
+            tools:text="@string/create" />
 
     </android.support.constraint.ConstraintLayout>
 
