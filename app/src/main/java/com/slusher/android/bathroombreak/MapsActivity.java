@@ -185,6 +185,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void addCurrentLocationMarkerWithPermissions() {
+        // TODO: Cleanup the whole permissions request pattern according to: https://github.com/googlesamples/android-RuntimePermissionsBasic/blob/master/Application/src/main/java/com/example/android/basicpermissions/MainActivity.java
         if ((ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
                 (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
@@ -206,7 +207,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (location != null) {
                     currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    // Marly & Walter Location
+                    // Marlyn & Walter Location
 //                      currentLocation = new LatLng(32.8012705, -116.9475112);
 
                     // Mitch's House
