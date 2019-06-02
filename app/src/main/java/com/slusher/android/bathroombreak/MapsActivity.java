@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -39,6 +41,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -159,7 +162,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 place.setReference(predsJsonArray.getJSONObject(i).getString("reference"));
                 place.setName(predsJsonArray.getJSONObject(i).getString("name"));
                 place.setAddress(predsJsonArray.getJSONObject(i).getString("vicinity"));
-                JSONObject jsonLocation = predsJsonArray.getJSONObject(0).getJSONObject("geometry").getJSONObject("location");
+                JSONObject jsonLocation = predsJsonArray.getJSONObject(i).getJSONObject("geometry").getJSONObject("location");
                 place.setLocation(new LatLng(jsonLocation.getDouble("lat"), jsonLocation.getDouble("lng")));
                 resultList.add(place);
             }
@@ -172,16 +175,64 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     private void addBathroomMarkers() {
-        ArrayList<String> searchTerms = new ArrayList<String>(Arrays.asList("starbucks", "mcdonalds", "cvs"));
+        ArrayList<String> searchTerms = new ArrayList<String>(Arrays.asList("starbucks", "mcdonalds", "cvs", "walgreens", "ampm"));
 
         ArrayList<Bathroom> list = new ArrayList<>();
+        ArrayList<Bathroom> allBathrooms = search(currentLocation, join("|", searchTerms));
+        list.addAll(allBathrooms);
 
-        for (String searchTerm : searchTerms)
-            list.addAll(search(currentLocation, searchTerm));
+        // Search each location and aggregate the results
+//        for (String searchTerm : searchTerms)
+//            list.addAll(search(currentLocation, searchTerm));
 
         for (Bathroom place : list) {
-            addMarker(place.getLocation(), place.getName(), false);
+            System.out.println("Adding: " + place.getAddress() + " at " + place.getLocation().latitude + " " + place.getLocation().longitude);
+            addMarker(place, false);
         }
+//        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+//
+//            @Override
+//            public View getInfoWindow(Marker arg0) {
+//                return null;
+//            }
+//
+//            @Override
+//            public View getInfoContents(Marker marker) {
+//
+//                LinearLayout info = new LinearLayout(getApplicationContext());
+//                info.setOrientation(LinearLayout.VERTICAL);
+//
+//                TextView title = new TextView(getApplicationContext());
+//                title.setTextColor(Color.BLACK);
+//                title.setGravity(Gravity.CENTER);
+//                title.setTypeface(null, Typeface.BOLD);
+//                title.setText(marker.getTitle());
+//
+//                TextView snippet = new TextView(getApplicationContext());
+//                snippet.setTextColor(Color.GRAY);
+//                snippet.setText(marker.getSnippet());
+//
+//                info.addView(title);
+//                info.addView(snippet);
+//
+//                return info;
+//            }
+//        });
+    }
+
+    private String join(String delimiter, List<String> input)
+    {
+        StringBuffer result = new StringBuffer("");
+
+        for(String str : input)
+        {
+            if(result.length() == 0)
+                result.append(str);
+            else
+                result.append(delimiter + str);
+        }
+
+        return result.toString();
     }
 
     private void addCurrentLocationMarkerWithPermissions() {
@@ -222,11 +273,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // Show approximate location
                     CircleOptions circleOptions = new CircleOptions();
                     circleOptions.center(currentLocation);
-                    circleOptions.radius(RADIUS);
+                    circleOptions.radius(RADIUS*1.1);
                     circleOptions.fillColor(Color.argb(30, 0, 20, 150));
                     circleOptions.strokeColor(Color.argb(10, 0, 20, 150));
 
                     mMap.addCircle(circleOptions);
+
 
 //                    addMarker(currentLocation, "Current Location", true);
 //                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, ZOOM_LEVEL));
@@ -262,10 +314,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void addMarker(LatLng location, String title, boolean useDefaultMarker) {
+    private void addMarker(Bathroom place, boolean useDefaultMarker) {
         MarkerOptions markerOptions = new MarkerOptions()
-                .position(location)
-                .title(title)
+                .position(place.getLocation())
+                .title(place.getName())
+                .snippet(place.getAddress())
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_bathroom_location))
                 .visible(true);
 
