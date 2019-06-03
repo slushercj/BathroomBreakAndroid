@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -15,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -66,6 +66,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
         API_KEY = getMetadata(this, "com.google.android.geo.API_KEY");
 
+        Toolbar appToolbar = findViewById(R.id.toolbar_header);
+
+        setSupportActionBar(appToolbar);
+
         // allow network on main thread
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -82,6 +86,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // get places
         //getPlaces();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+//            case R.id.action_favorite:
+//                // User chose the "Favorite" action, mark the current item
+//                // as a favorite...
+//                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
     public static String getMetadata(Context context, String name) {
@@ -220,13 +244,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        });
     }
 
-    private String join(String delimiter, List<String> input)
-    {
+    private String join(String delimiter, List<String> input) {
         StringBuffer result = new StringBuffer("");
 
-        for(String str : input)
-        {
-            if(result.length() == 0)
+        for (String str : input) {
+            if (result.length() == 0)
                 result.append(str);
             else
                 result.append(delimiter + str);
@@ -240,15 +262,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if ((ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
                 (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
-        }
-        else {
+        } else {
             addCurrentLocationMarker();
         }
     }
 
     @SuppressLint("MissingPermission")
-    private void addCurrentLocationMarker()
-    {
+    private void addCurrentLocationMarker() {
         mMap.setMyLocationEnabled(true);
 
         // get current location and search within this radius
@@ -273,7 +293,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // Show approximate location
                     CircleOptions circleOptions = new CircleOptions();
                     circleOptions.center(currentLocation);
-                    circleOptions.radius(RADIUS*1.1);
+                    circleOptions.radius(RADIUS * 1.1);
                     circleOptions.fillColor(Color.argb(30, 0, 20, 150));
                     circleOptions.strokeColor(Color.argb(10, 0, 20, 150));
 
