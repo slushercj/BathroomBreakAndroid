@@ -135,6 +135,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.setTrafficEnabled(true);
+
         addCurrentLocationMarkerWithPermissions();
     }
 
@@ -303,7 +305,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                    addMarker(currentLocation, "Current Location", true);
 //                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, ZOOM_LEVEL));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, ZOOM_LEVEL));
-
+                    mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
                     addBathroomMarkers();
                 }
             }

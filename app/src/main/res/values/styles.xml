@@ -15,9 +15,11 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="RatingBar" parent="Theme.AppCompat">
+    <style name="RatingBar" parent="android:style/Widget.Material.RatingBar.Small">
         <item name="colorControlNormal">@color/quantum_black_100</item>
-        <item name="colorControlActivated">@color/quantum_yellow</item>
+        <item name="colorControlActivated">@color/quantum_orange300</item>
+        <item name="android:maxHeight">16dp</item>
+        <item name="android:maxWidth">16dp</item>
     </style>
 
 </resources>

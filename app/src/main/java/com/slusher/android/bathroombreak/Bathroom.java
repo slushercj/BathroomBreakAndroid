@@ -7,6 +7,10 @@ public class Bathroom {
     private String mName;
     private LatLng mLocation;
     private String mAddress;
+    private double mRating;
+    private boolean mHasBabyChangingStation;
+    private boolean mHasDisability;
+    private boolean mHasGenderNeutralBathrooms;
 
     public String getAddress() {
         return mAddress;
@@ -38,6 +42,38 @@ public class Bathroom {
 
     public void setName(String name) {
         mName = name;
+    }
+
+    public double getRating() {
+        return mRating;
+    }
+
+    public void setRating(double mRating) {
+        this.mRating = mRating;
+    }
+
+    public boolean isHasBabyChangingStation() {
+        return mHasBabyChangingStation;
+    }
+
+    public void setHasBabyChangingStation(boolean mHasBabyChangingStation) {
+        this.mHasBabyChangingStation = mHasBabyChangingStation;
+    }
+
+    public boolean ismHasDisability() {
+        return mHasDisability;
+    }
+
+    public void setHasDisability(boolean mHasDisability) {
+        this.mHasDisability = mHasDisability;
+    }
+
+    public boolean isHasGenderNeutralBathrooms() {
+        return mHasGenderNeutralBathrooms;
+    }
+
+    public void setHasGenderNeutralBathrooms(boolean mHasGenderNeutralBathrooms) {
+        this.mHasGenderNeutralBathrooms = mHasGenderNeutralBathrooms;
     }
 
     public Bathroom() {
