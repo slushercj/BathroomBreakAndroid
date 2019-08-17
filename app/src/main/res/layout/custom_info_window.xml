@@ -42,7 +42,8 @@
             android:layout_gravity="center_horizontal"
             android:max="5"
             android:numStars="5"
-            android:rating="4.5"
+            android:rating="2.5"
+            android:progressBackgroundTint="#999"
             app:mrb_progressTint="#F79602"
             app:mrb_secondaryProgressTint="#B4A6A3" />
     </LinearLayout>
