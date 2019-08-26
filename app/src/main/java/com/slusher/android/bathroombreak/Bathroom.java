@@ -3,6 +3,7 @@ package com.slusher.android.bathroombreak;
 import com.google.android.gms.maps.model.LatLng;
 
 public class Bathroom {
+    private String mId;
     private String mReference;
     private String mName;
     private LatLng mLocation;
@@ -11,6 +12,14 @@ public class Bathroom {
     private boolean mHasBabyChangingStation;
     private boolean mHasDisability;
     private boolean mHasGenderNeutralBathrooms;
+
+    public String getId() {
+        return mId;
+    }
+
+    public void setId(String mId) {
+        this.mId = mId;
+    }
 
     public String getAddress() {
         return mAddress;
@@ -45,7 +54,8 @@ public class Bathroom {
     }
 
     public double getRating() {
-        return mRating;
+        double randomRating = Math.random() * 4 + 1;
+        return randomRating;
     }
 
     public void setRating(double mRating) {

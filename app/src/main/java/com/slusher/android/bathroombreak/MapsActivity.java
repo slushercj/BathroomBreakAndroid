@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -21,11 +22,13 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
@@ -44,12 +47,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.INTERNET;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity
+        implements OnMapReadyCallback,
+        OnInfoWindowClickListener {
 
     private static final String TAG = "MapsActivity";
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private AddBathroomTask addBathroomTask;
     private LatLng currentLocation;
     private String API_KEY;
     private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
@@ -65,6 +72,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         API_KEY = getMetadata(this, "com.google.android.geo.API_KEY");
+        addBathroomTask = new AddBathroomTask(MapsActivity.this);
 
         Toolbar appToolbar = findViewById(R.id.toolbar_header);
 
@@ -83,6 +91,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
 
         // get places
         //getPlaces();
@@ -137,6 +146,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMap.setTrafficEnabled(true);
 
+        mMap.setOnInfoWindowClickListener(this);
+
         addCurrentLocationMarkerWithPermissions();
     }
 
@@ -182,23 +193,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // Extract the descriptions from the results
             resultList = new ArrayList<>(predsJsonArray.length());
+            Bathroom[] bathroomList = new Bathroom[predsJsonArray.length()];
 
             for (int i = 0; i < predsJsonArray.length(); i++) {
                 Bathroom place = new Bathroom();
+                place.setId(predsJsonArray.getJSONObject(i).getString("place_id"));
                 place.setReference(predsJsonArray.getJSONObject(i).getString("reference"));
                 place.setName(predsJsonArray.getJSONObject(i).getString("name"));
                 place.setAddress(predsJsonArray.getJSONObject(i).getString("vicinity"));
                 JSONObject jsonLocation = predsJsonArray.getJSONObject(i).getJSONObject("geometry").getJSONObject("location");
                 place.setLocation(new LatLng(jsonLocation.getDouble("lat"), jsonLocation.getDouble("lng")));
                 resultList.add(place);
+                bathroomList[i] = place;
             }
+
+            addBathroomTask.doInBackground(bathroomList);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error processing JSON results", e);
         }
 
         return resultList;
     }
-
 
     private void addBathroomMarkers() {
         ArrayList<String> searchTerms = new ArrayList<String>(Arrays.asList("starbucks", "mcdonalds", "cvs", "walgreens", "ampm"));
@@ -215,35 +230,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             System.out.println("Adding: " + place.getAddress() + " at " + place.getLocation().latitude + " " + place.getLocation().longitude);
             addMarker(place, false);
         }
-//        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-//
-//            @Override
-//            public View getInfoWindow(Marker arg0) {
-//                return null;
-//            }
-//
-//            @Override
-//            public View getInfoContents(Marker marker) {
-//
-//                LinearLayout info = new LinearLayout(getApplicationContext());
-//                info.setOrientation(LinearLayout.VERTICAL);
-//
-//                TextView title = new TextView(getApplicationContext());
-//                title.setTextColor(Color.BLACK);
-//                title.setGravity(Gravity.CENTER);
-//                title.setTypeface(null, Typeface.BOLD);
-//                title.setText(marker.getTitle());
-//
-//                TextView snippet = new TextView(getApplicationContext());
-//                snippet.setTextColor(Color.GRAY);
-//                snippet.setText(marker.getSnippet());
-//
-//                info.addView(title);
-//                info.addView(snippet);
-//
-//                return info;
-//            }
-//        });
     }
 
     private String join(String delimiter, List<String> input) {
@@ -262,8 +248,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void addCurrentLocationMarkerWithPermissions() {
         // TODO: Cleanup the whole permissions request pattern according to: https://github.com/googlesamples/android-RuntimePermissionsBasic/blob/master/Application/src/main/java/com/example/android/basicpermissions/MainActivity.java
         if ((ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-                (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+                (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+                (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION, INTERNET}, LOCATION_REQUEST_CODE);
         } else {
             addCurrentLocationMarker();
         }
@@ -305,7 +292,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                    addMarker(currentLocation, "Current Location", true);
 //                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, ZOOM_LEVEL));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, ZOOM_LEVEL));
-                    mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
+                    mMap.setInfoWindowAdapter(new BathroomInfoWindowAdapter(MapsActivity.this));
                     addBathroomMarkers();
                 }
             }
@@ -339,14 +326,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void addMarker(Bathroom place, boolean useDefaultMarker) {
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(place.getLocation())
-                .title(place.getName())
-                .snippet(place.getAddress())
+                //.title(place.getName())
+                //.snippet(place.getAddress())
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_bathroom_location))
                 .visible(true);
 
         if (useDefaultMarker)
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker());
 
-        mMap.addMarker(markerOptions);
+        Marker marker = mMap.addMarker(markerOptions);
+        marker.setTag(place);
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Toast toast = Toast.makeText(MapsActivity.this, "marker " + marker.getId() + " clicked!", Toast.LENGTH_LONG);
+        toast.show();
     }
 }
