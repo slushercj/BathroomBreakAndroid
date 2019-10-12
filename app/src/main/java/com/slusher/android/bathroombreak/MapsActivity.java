@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -23,6 +23,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -51,7 +52,8 @@ import static android.Manifest.permission.INTERNET;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback,
-        OnInfoWindowClickListener {
+//        OnInfoWindowClickListener,
+        OnMarkerClickListener {
 
     private static final String TAG = "MapsActivity";
     private GoogleMap mMap;
@@ -146,7 +148,8 @@ public class MapsActivity extends AppCompatActivity
 
         mMap.setTrafficEnabled(true);
 
-        mMap.setOnInfoWindowClickListener(this);
+//        mMap.setOnInfoWindowClickListener(this);
+        mMap.setOnMarkerClickListener(this);
 
         addCurrentLocationMarkerWithPermissions();
     }
@@ -251,6 +254,8 @@ public class MapsActivity extends AppCompatActivity
                 (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
                 (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION, INTERNET}, LOCATION_REQUEST_CODE);
+
+            addCurrentLocationMarker();
         } else {
             addCurrentLocationMarker();
         }
@@ -338,9 +343,16 @@ public class MapsActivity extends AppCompatActivity
         marker.setTag(place);
     }
 
+//    @Override
+//    public void onInfoWindowClick(Marker marker) {
+//        Toast toast = Toast.makeText(MapsActivity.this, "marker " + marker.getId() + " clicked!", Toast.LENGTH_LONG);
+//        toast.show();
+//    }
+
     @Override
-    public void onInfoWindowClick(Marker marker) {
+    public boolean onMarkerClick(Marker marker) {
         Toast toast = Toast.makeText(MapsActivity.this, "marker " + marker.getId() + " clicked!", Toast.LENGTH_LONG);
         toast.show();
+        return false;
     }
 }

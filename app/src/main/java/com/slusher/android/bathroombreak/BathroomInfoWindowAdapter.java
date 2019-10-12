@@ -1,6 +1,7 @@
 package com.slusher.android.bathroombreak;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -21,6 +22,14 @@ public class BathroomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         mWindow = LayoutInflater
                 .from(mContext)
                 .inflate(R.layout.bathroom_info_window, null);
+
+        initializeFonts();
+    }
+
+    private void initializeFonts() {
+        // initialize the font manager
+        Typeface iconFont = FontManager.getTypeface(this.mContext, FontManager.FONTAWESOME);
+        FontManager.markAsIconContainer(mWindow.findViewById(R.id.linear_layout_amenities), iconFont);
     }
 
     private void renderWindowText(Marker marker, View view){

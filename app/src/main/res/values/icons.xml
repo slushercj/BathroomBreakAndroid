@@ -5,4 +5,7 @@
     <string name="fa_envelope">&#xf0e0;</string>
     <string name="fa_camera">&#xf030;</string>
     <string name="fa_back">&#xf060;</string>
+    <string name="fa_babystation">&#xf77c;</string>
+    <string name="fa_wheelchair">&#xf193;</string>
+    <string name="fa_trans">&#xf225;</string>
 </resources>

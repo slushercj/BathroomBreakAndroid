@@ -20,7 +20,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="#000"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:textStyle="bold"/>
 
         <TextView
@@ -46,5 +46,48 @@
             android:progressBackgroundTint="#999"
             app:mrb_progressTint="#F79602"
             app:mrb_secondaryProgressTint="#B4A6A3" />
+
+        <LinearLayout
+            android:id="@+id/linear_layout_amenities"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/quantum_lightblue700"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:textSize="14sp"
+                android:clickable="true"
+                android:linksClickable="true"
+                android:textColorLink="@color/colorPrimary"
+                android:autoLink="web"
+                android:text="See\nReviews"/>
+
+            <TextView
+                android:layout_width="24sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="@string/fa_envelope"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="24sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="@string/fa_wheelchair"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="24sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="@string/fa_trans"
+                android:textSize="25sp" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
