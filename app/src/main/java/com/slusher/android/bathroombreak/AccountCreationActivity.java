@@ -20,7 +20,7 @@ public class AccountCreationActivity extends AppCompatActivity {
 
         initializeFonts();
 
-        createAccountButton = findViewById(R.id.button_create);
+        createAccountButton = findViewById(R.id.button_sign_in);
         backButton = findViewById(R.id.button_back);
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -45,6 +45,7 @@ public class AccountCreationActivity extends AppCompatActivity {
         FontManager.setIcon(findViewById(R.id.icon_name), iconFont);
         FontManager.setIcon(findViewById(R.id.icon_email), iconFont);
         FontManager.setIcon(findViewById(R.id.icon_password), iconFont);
+        FontManager.setIcon(findViewById(R.id.icon_confirm_password), iconFont);
         FontManager.setIcon(findViewById(R.id.button_back), iconFont);
         FontManager.setIcon(findViewById(R.id.button_camera), iconFont);
     }

@@ -37,4 +37,5 @@ dependencies {
     implementation 'com.amazonaws:aws-android-sdk-core:2.6.+'
     implementation 'com.amazonaws:aws-android-sdk-ddb:2.6.+'
     implementation 'com.amazonaws:aws-android-sdk-ddb-document:2.6.+'
+    implementation 'com.facebook.android:facebook-login:[5,6)'
 }
