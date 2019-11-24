@@ -14,6 +14,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import java.util.Arrays;
 
@@ -34,12 +35,51 @@ public class LoginActivity extends AppCompatActivity {
         initializeFonts();
 
         // initialize the buttons
-        accountCreationButton = findViewById(R.id.button_create_account);
-        signInButton = findViewById(R.id.button_sign_in);
         callbackManager = CallbackManager.Factory.create();
 
+        initializeRegularSigninButton();
+        initializeFacebookLoginButton();
+        initializeGoogleLoginButton();
+        initializeAccountCreationButton();
 
-        facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
+        // set listeners
+
+    }
+
+    private void initializeGoogleLoginButton() {
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+    }
+
+    private void initializeRegularSigninButton() {
+        signInButton = findViewById(R.id.button_sign_in);
+
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void initializeAccountCreationButton() {
+        accountCreationButton = findViewById(R.id.button_create_account);
+
+        accountCreationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, AccountCreationActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void initializeFacebookLoginButton() {
+        facebookLoginButton = findViewById(R.id.login_button);
         facebookLoginButton.setPermissions(Arrays.asList(
                 "public_profile", "email", "user_birthday", "user_friends"));
         // If you are using in a fragment, call loginButton.setFragment(this);
@@ -61,23 +101,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onError(FacebookException exception) {
                 // App code
-            }
-        });
-
-        // set listeners
-        accountCreationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, AccountCreationActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-                startActivity(intent);
             }
         });
     }

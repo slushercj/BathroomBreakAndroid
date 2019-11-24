@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.INTERNET;
 
@@ -55,7 +57,7 @@ public class MapsActivity extends AppCompatActivity
 //        OnInfoWindowClickListener,
         OnMarkerClickListener {
 
-    private static final String TAG = "MapsActivity";
+    private static final String TAG = "BathroomBreak";
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private AddBathroomTask addBathroomTask;
@@ -67,7 +69,7 @@ public class MapsActivity extends AppCompatActivity
     private static final String LOG_TAG = "ListRest";
     private static final Long RADIUS = 4023L;
     private static final Float ZOOM_LEVEL = 13f;
-    private static final Integer LOCATION_REQUEST_CODE = 1;
+    private static final int LOCATION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,7 +153,12 @@ public class MapsActivity extends AppCompatActivity
 //        mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMarkerClickListener(this);
 
-        addCurrentLocationMarkerWithPermissions();
+//        addCurrentLocationMarkerWithPermissions();
+        String[] permissionsToRequest = new String[]{ ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION };
+        if(checkPermission(permissionsToRequest, LOCATION_REQUEST_CODE))
+        {
+            addCurrentLocationMarker();
+        }
     }
 
     private ArrayList<Bathroom> search(LatLng location, String name) {
@@ -248,20 +255,31 @@ public class MapsActivity extends AppCompatActivity
         return result.toString();
     }
 
-    private void addCurrentLocationMarkerWithPermissions() {
-        // TODO: Cleanup the whole permissions request pattern according to: https://github.com/googlesamples/android-RuntimePermissionsBasic/blob/master/Application/src/main/java/com/example/android/basicpermissions/MainActivity.java
-        if ((ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-                (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-                (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED)) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION, INTERNET}, LOCATION_REQUEST_CODE);
+    // Function to check and request permission
+    public boolean checkPermission(String[] permissions, int requestCode)
+    {
+        boolean hasPermission = false;
 
-            addCurrentLocationMarker();
-        } else {
-            addCurrentLocationMarker();
+        // Checking if permission is not granted
+        for(String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(
+                    MapsActivity.this,
+                    permission)
+                    == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat
+                        .requestPermissions(
+                                MapsActivity.this,
+                                permissions,
+                                requestCode);
+            } else {
+                hasPermission = true;
+                Log.d(TAG, "Already have permission " + permission);
+            }
         }
+
+        return hasPermission;
     }
 
-    @SuppressLint("MissingPermission")
     private void addCurrentLocationMarker() {
         mMap.setMyLocationEnabled(true);
 
@@ -309,7 +327,7 @@ public class MapsActivity extends AppCompatActivity
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case 1: {
+            case LOCATION_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
